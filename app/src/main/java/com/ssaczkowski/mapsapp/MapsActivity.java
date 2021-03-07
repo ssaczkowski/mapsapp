@@ -2,17 +2,22 @@ package com.ssaczkowski.mapsapp;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final String TAG = "MAP";
     private GoogleMap mMap;
 
     @Override
@@ -41,8 +46,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         // Add a marker in San Miguel and move the camera
-        LatLng sm = new LatLng(-34.5276416, -58.7268096);
-        mMap.addMarker(new MarkerOptions().position(sm).title("Marker in San Miguel"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sm));
+        LatLng sanMiguel = new LatLng(-34.5276416, -58.7268096);
+
+        // Add a marker in San Miguel and move the camera
+        LatLng bellaVista = new LatLng(-34.57462, -58.7304421);
+
+        mMap.addMarker(new MarkerOptions().position(bellaVista).title("Marker in Bella Vista")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+
+        mMap.addMarker(new MarkerOptions().position(sanMiguel).title("Marker in San Miguel")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location)).flat(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sanMiguel));
+
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+
     }
 }

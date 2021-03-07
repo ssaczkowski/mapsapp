@@ -9,5 +9,4 @@
     map:uiZoomControls="true"
     map:cameraZoom="13"
     map:uiRotateGestures="true"
-    map:liteMode="true"
     tools:context=".MapsActivity" />
