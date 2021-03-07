@@ -13,9 +13,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerDragListener {
 
     private static final String TAG = "MAP";
     private GoogleMap mMap;
@@ -43,16 +44,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.setOnMapClickListener(this);
+
+        mMap.setOnMarkerDragListener(this);
+
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         // Add a marker in San Miguel and move the camera
         LatLng sanMiguel = new LatLng(-34.5276416, -58.7268096);
-
-        // Add a marker in San Miguel and move the camera
-        LatLng bellaVista = new LatLng(-34.57462, -58.7304421);
-
-        mMap.addMarker(new MarkerOptions().position(bellaVista).title("Marker in Bella Vista")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
 
         mMap.addMarker(new MarkerOptions().position(sanMiguel).title("Marker in San Miguel")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location)).flat(true));
@@ -72,5 +71,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e(TAG, "Can't find style. Error: ", e);
         }
 
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        mMap.addMarker(new MarkerOptions().position(latLng).title(latLng.toString()).draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+        marker.hideInfoWindow();
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        LatLng latLng = marker.getPosition();
+        marker.setSnippet("Lat: " + latLng.latitude + " Long: " + latLng.longitude);
+        marker.showInfoWindow();
     }
 }
